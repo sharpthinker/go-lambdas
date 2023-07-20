@@ -12,7 +12,7 @@ resource "aws_lambda_function" "tfer--certGen-eu-central-1" {
 
   environment {
     variables = {
-      CA_CERTIFICATE_ARN = "arn:aws:acm:eu-central-1:923553073565:certificate/ed6d3467-3224-4cb0-b9c9-49a98c752c15"
+      CA_CERTIFICATE_ARN = "arn:aws:acm:eu-central-1:923553073565:certificate/c1042f7d-6ccf-4c7d-8bef-e4ff14f147a3"
       CA_KEY_ARN         = "arn:aws:secretsmanager:eu-central-1:923553073565:secret:ca/encryptedPrivKey-eP5NZt"
     }
   }
