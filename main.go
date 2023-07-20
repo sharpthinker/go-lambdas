@@ -54,9 +54,9 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	caCert := importCACertificate(sess, caCertificateARN)
 	caKey := importCaKey(sess, caKeyArn)
 	generatedCertBytes, generatedKeyBytes := certGen(request, caCert, caKey)
-	genCertArn := uploadCertificate(sess, generatedCertBytes, generatedKeyBytes)
+	genCertArn, genCertString, privKeyString := uploadCertificate(sess, generatedCertBytes, generatedKeyBytes)
 
-	msg := fmt.Sprintf("Certificate has been succcesfully generated. Its arn: %v. Valid till: %v", genCertArn, time.Now().AddDate(0, 0, certJson.NotAfter))
+	msg := fmt.Sprintf("Certificate has been succcesfully generated. Its arn: %v. Certificate PEM: %v  PrivateKey PEM: %v, .Valid till: %v", genCertArn, genCertString, privKeyString, time.Now().AddDate(0, 0, certJson.NotAfter))
 
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
@@ -70,7 +70,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	return resp, nil
 }
 
-func uploadCertificate(sess *session.Session, genCertBytes []byte, genKeyBytes []byte) string {
+func uploadCertificate(sess *session.Session, genCertBytes []byte, genKeyBytes []byte) (string, string, string) {
 	certPem := &pem.Block{
 		Type:  "CERTIFICATE",
 		Bytes: genCertBytes,
@@ -90,7 +90,9 @@ func uploadCertificate(sess *session.Session, genCertBytes []byte, genKeyBytes [
 	if err != nil {
 		log.Printf("Error importing certificate: %v", err)
 	}
-	return *result.CertificateArn
+
+	encryptedPrivKey, err := x509.EncryptPEMBlock(rand.Reader, privateKeyPEM.Type, genKeyBytes, []byte(os.Getenv("PRIV_KEY_PASS")), x509.PEMCipherAES256)
+	return *result.CertificateArn, string(pem.EncodeToMemory(certPem)), string(pem.EncodeToMemory(encryptedPrivKey))
 }
 
 func importCACertificate(sess *session.Session, arn string) string {
@@ -127,7 +129,7 @@ func importCaKey(sess *session.Session, caKeyArn string) []byte {
 	}
 
 	caKeyBlock, _ := pem.Decode([]byte(*result.SecretString))
-	caKey, err := x509.DecryptPEMBlock(caKeyBlock, []byte("test"))
+	caKey, err := x509.DecryptPEMBlock(caKeyBlock, []byte(os.Getenv("PRIV_KEY_PASS")))
 	if err != nil {
 		log.Printf("Decrypting private key: Error is %v", err)
 	}
