@@ -1,3 +1,8 @@
+variable "privKeyPass" {
+  type = string
+  description = "Password for private key encryption/decryption"
+}
+
 data "aws_lambda_function" "existing" {
   count         = fileexists("certGen.zip") ? 0 : 1
   function_name = "certGen-eu-central-1"
@@ -14,6 +19,7 @@ resource "aws_lambda_function" "tfer--certGen-eu-central-1" {
     variables = {
       CA_CERTIFICATE_ARN = "arn:aws:acm:eu-central-1:923553073565:certificate/c1042f7d-6ccf-4c7d-8bef-e4ff14f147a3"
       CA_KEY_ARN         = "arn:aws:secretsmanager:eu-central-1:923553073565:secret:ca/encryptedPrivKey-eP5NZt"
+      PRIV_KEY_PASS      = var.privKeyPass
     }
   }
 
