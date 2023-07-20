@@ -23,16 +23,22 @@ Build binary:
   variables:
     GOOS: linux
     GOARCH: amd64
+  before_script:
+    - apk add zip
   script:
     - GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./${TF_DIR}/certGen main.go
+    - zip ${TF_DIR}/certGen.zip ${TF_DIR}/certGen
   <<: *tags
   artifacts:
     paths:
       - ./${TF_DIR}/certGen
     expire_in: 1 week
   only:
-    - main
-    - merge_requests
+    refs:
+      - branches
+      - merge_requests
+    changes:
+      - "*.go"
 
 Dummy plan: 
   image: 

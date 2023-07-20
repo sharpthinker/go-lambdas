@@ -1,14 +1,10 @@
-data "archive_file" "certGen" {
-  type        = "zip"
-  source_file  = "certGen"
-  output_path = "certGen.zip"
+data "aws_lambda_function" "existing" {
+  count         = fileexists("certGen.zip") ? 0 : 1
+  function_name = "certGen-us-east-1"
 }
 
-resource "aws_s3_bucket_object" "certGen" {
-  bucket = aws_s3_bucket.tfer--lambda-golang-archives-us-east-1.id
-  key    = "certGen.zip"
-  source = "certGen.zip"
-  depends_on = [ aws_s3_bucket.tfer--lambda-golang-archives-us-east-1 ]
+locals {
+  source_code_hash = fileexists("certGen.zip") ? filebase64sha256("certGen.zip") : data.aws_lambda_function.existing[0].source_code_hash
 }
 
 resource "aws_lambda_function" "certGen-us-east-1" {
@@ -24,8 +20,7 @@ resource "aws_lambda_function" "certGen-us-east-1" {
   ephemeral_storage {
     size = "512"
   }
-  s3_bucket = aws_s3_bucket.tfer--lambda-golang-archives-us-east-1.id
-  s3_key = aws_s3_bucket_object.certGen.key
+  filename = "certGen.zip"
   function_name                  = "certGen-us-east-1"
   handler                        = "certGen"
   memory_size                    = "512"
@@ -35,10 +30,9 @@ resource "aws_lambda_function" "certGen-us-east-1" {
   runtime                        = "go1.x"
   skip_destroy                   = "false"
   timeout                        = "15"
-  source_code_hash = data.archive_file.certGen.output_base64sha256
+  source_code_hash = local.source_code_hash
 
   tracing_config {
     mode = "PassThrough"
   }
-  depends_on = [ aws_s3_bucket.tfer--lambda-golang-archives-us-east-1 ]
 }
