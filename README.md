@@ -64,8 +64,8 @@ curl -XPOST https://api.jb.wh1sk.one/api/cert -H 'Content-Type: application/json
 
 ### Example of use
 
-![demo](https://jmp.sh/9rnJvOLt)
+https://jumpshare.com/v/LZa0pfszq8nEFYgcF74w
 
 ### Architecture diagram 
 
-[diagram](/static/Architecture_Diagram.png)
+[diagram](./assets/Architecture_Diagram.png)
