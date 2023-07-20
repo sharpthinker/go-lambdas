@@ -31,7 +31,7 @@ Build binary:
   <<: *tags
   artifacts:
     paths:
-      - ./${TF_DIR}/certGen
+      - ./${TF_DIR}/certGen.zip
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
