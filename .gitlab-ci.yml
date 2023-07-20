@@ -48,7 +48,7 @@ Dummy plan:
   script:
     - cd ${TF_DIR} && terraform init
     - terraform validate
-    - terraform plan -var 'privKeyPass=${PRIV_KEY_PASS}'
+    - terraform plan -var "privKeyPass=${PRIV_KEY_PASS}"
   <<: *tags
   only:
     - merge_requests
@@ -62,7 +62,7 @@ Plan:
   script:
     - cd ${TF_DIR} && terraform init
     - terraform validate
-    - terraform plan -var 'privKeyPass=${PRIV_KEY_PASS}' -out ${CI_PROJECT_DIR}/${TF_DIR}/${PLAN}
+    - terraform plan -var "privKeyPass=${PRIV_KEY_PASS}" -out ${CI_PROJECT_DIR}/${TF_DIR}/${PLAN}
   <<: *tags
   artifacts:
     paths:
