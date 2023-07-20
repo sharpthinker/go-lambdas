@@ -1,7 +1,5 @@
 package main
 
-// some test changes
-
 import (
 	"context"
 	"crypto/rand"
@@ -47,6 +45,7 @@ func main() {
 }
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Println("Test====Line====Test")
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(os.Getenv("AWS_REGION")),
 	})
