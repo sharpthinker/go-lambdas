@@ -29,6 +29,9 @@ Build binary:
     paths:
       - ./terraform/${AWS_REGION}/certGen
     expire_in: 1 week
+  only:
+    - main
+    - merge_requests
 
 Dummy plan: 
   image: 
@@ -41,6 +44,8 @@ Dummy plan:
     - terraform validate
     - terraform plan
   <<: *tags
+  only:
+    - merge_requests
 
 Plan:
   image: 
@@ -49,7 +54,7 @@ Plan:
       - '/usr/bin/env'
   stage: plan
   script:
-    - cd terraform/${AWS_REGION}
+    - cd terraform/${AWS_REGION} && terraform init
     - terraform validate
     - terraform plan -out ${PLAN}
   <<: *tags
@@ -57,8 +62,8 @@ Plan:
     paths:
       - ${CI_PROJECT_DIR}/terraform/{AWS_REGION}/${PLAN}
     expire_in: 3 days
-  rules:
-    - if: $AWS_REGION =~ /^us-east-1|^eu-central-1/ && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    - main
 
 Apply:
   image: 
@@ -72,5 +77,5 @@ Apply:
     - terraform show ${PLAN}
     - terraform apply ${PLAN}
   <<: *tags
-  rules:
-    - if: $AWS_REGION =~ /^us-east-1|^eu-central-1/ && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    - main
