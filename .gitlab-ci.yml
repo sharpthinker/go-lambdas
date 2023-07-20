@@ -36,6 +36,7 @@ Build binary:
   only:
     refs:
       - merge_requests
+      - main
     changes:
       - "*.go"
 
