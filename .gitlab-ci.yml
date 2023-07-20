@@ -1,0 +1,76 @@
+variables:
+  PLAN: plan.tfplan
+  AWS_REGION:
+    description: "Define region"
+    value: us-east-1
+    options:
+      - eu-central-1
+      - us-east-1
+
+.tags: &tags
+  tags:
+    - gitlab-org-docker
+
+stages:
+  - build
+  - plan
+  - apply
+
+Build binary:
+  image: golang:alpine
+  stage: build
+  variables:
+    GOOS: linux
+    GOARCH: amd64
+  script:
+    - GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./terraform/${AWS_REGION}/certGen main.go
+  <<: *tags
+  artifacts:
+    paths:
+      - ./terraform/${AWS_REGION}/certGen
+    expire_in: 1 week
+
+Dummy plan: 
+  image: 
+    name: hashicorp/terraform:${TERRAFORM_IMAGE_VERSION}
+    entrypoint:
+      - '/usr/bin/env'
+  stage: plan
+  script:
+    - cd terraform/${AWS_REGION} && terraform init
+    - terraform validate
+    - terraform plan
+  <<: *tags
+
+Plan:
+  image: 
+    name: hashicorp/terraform:${TERRAFORM_IMAGE_VERSION}
+    entrypoint:
+      - '/usr/bin/env'
+  stage: plan
+  script:
+    - cd terraform/${AWS_REGION}
+    - terraform validate
+    - terraform plan -out ${PLAN}
+  <<: *tags
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/terraform/{AWS_REGION}/${PLAN}
+    expire_in: 3 days
+  rules:
+    - if: $AWS_REGION =~ /^us-east-1|^eu-central-1/ && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+Apply:
+  image: 
+    name: hashicorp/terraform:${TERRAFORM_IMAGE_VERSION}
+    entrypoint:
+      - '/usr/bin/env'
+  stage: apply
+  when: manual
+  script:
+    - cd terraform/${AWS_REGION} && terraform init
+    - terraform show ${PLAN}
+    - terraform apply ${PLAN}
+  <<: *tags
+  rules:
+    - if: $AWS_REGION =~ /^us-east-1|^eu-central-1/ && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
