@@ -33,12 +33,10 @@ Build binary:
     paths:
       - ./${TF_DIR}/certGen
     expire_in: 1 week
-  only:
-    refs:
-      - merge_requests
-      - main
-    changes:
-      - "*.go"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || ${CI_COMMIT_BRANCH} == ${CI_DEFAULT_BRANCH}
+      changes:
+        - "*.go"
 
 Dummy plan: 
   image: 
