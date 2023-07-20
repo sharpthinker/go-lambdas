@@ -6,6 +6,7 @@ variables:
     options:
       - eu-central-1
       - us-east-1
+  TF_DIR: ./terraform/${AWS_REGION}
 
 .tags: &tags
   tags:
@@ -23,11 +24,11 @@ Build binary:
     GOOS: linux
     GOARCH: amd64
   script:
-    - GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./terraform/${AWS_REGION}/certGen main.go
+    - GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./${TF_DIR}/certGen main.go
   <<: *tags
   artifacts:
     paths:
-      - ./terraform/${AWS_REGION}/certGen
+      - ./${TF_DIR}/certGen
     expire_in: 1 week
   only:
     - main
@@ -40,7 +41,7 @@ Dummy plan:
       - '/usr/bin/env'
   stage: plan
   script:
-    - cd terraform/${AWS_REGION} && terraform init
+    - cd ${TF_DIR} && terraform init
     - terraform validate
     - terraform plan
   <<: *tags
@@ -54,13 +55,13 @@ Plan:
       - '/usr/bin/env'
   stage: plan
   script:
-    - cd terraform/${AWS_REGION} && terraform init
+    - cd ${TF_DIR} && terraform init
     - terraform validate
-    - terraform plan -out ${PLAN}
+    - terraform plan -out ${CI_PROJECT_DIR}/${TF_DIR}/${PLAN}
   <<: *tags
   artifacts:
     paths:
-      - ${CI_PROJECT_DIR}/terraform/{AWS_REGION}/${PLAN}
+      - ${CI_PROJECT_DIR}/${TF_DIR}/${PLAN}
     expire_in: 3 days
   only:
     - main
@@ -73,7 +74,7 @@ Apply:
   stage: apply
   when: manual
   script:
-    - cd terraform/${AWS_REGION} && terraform init
+    - cd ${TF_DIR} && terraform init
     - terraform show ${PLAN}
     - terraform apply ${PLAN}
   <<: *tags
