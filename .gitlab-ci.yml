@@ -35,7 +35,6 @@ Build binary:
     expire_in: 1 week
   only:
     refs:
-      - branches
       - merge_requests
     changes:
       - "*.go"
