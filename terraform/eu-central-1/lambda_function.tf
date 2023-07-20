@@ -20,6 +20,7 @@ resource "aws_lambda_function" "tfer--certGen-eu-central-1" {
   ephemeral_storage {
     size = "512"
   }
+  publish = true
   filename = "certGen.zip"
   function_name                  = "certGen-eu-central-1"
   handler                        = "certGen"

@@ -20,6 +20,7 @@ resource "aws_lambda_function" "certGen-us-east-1" {
   ephemeral_storage {
     size = "512"
   }
+  publish = true
   filename = "certGen.zip"
   function_name                  = "certGen-us-east-1"
   handler                        = "certGen"
