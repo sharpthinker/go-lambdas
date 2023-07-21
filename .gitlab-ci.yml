@@ -46,7 +46,7 @@ Dummy plan:
       - '/usr/bin/env'
   stage: plan
   script:
-    - cd ${TF_DIR} && terraform init && ls -la 
+    - cd ${TF_DIR} && terraform init
     - terraform validate
     - terraform plan -var "privKeyPass=${PRIV_KEY_PASS}"
   <<: *tags
@@ -60,7 +60,7 @@ Plan:
       - '/usr/bin/env'
   stage: plan
   script:
-    - cd ${TF_DIR} && terraform init && ls -la 
+    - cd ${TF_DIR} && terraform init
     - terraform validate
     - terraform plan -var "privKeyPass=${PRIV_KEY_PASS}" -out ${CI_PROJECT_DIR}/${TF_DIR}/${PLAN}
   <<: *tags
@@ -79,7 +79,7 @@ Apply:
   stage: apply
   when: manual
   script:
-    - cd ${TF_DIR} && terraform init && ls -la 
+    - cd ${TF_DIR} && terraform init 
     - terraform show ${PLAN}
     - terraform apply ${PLAN}
   <<: *tags
