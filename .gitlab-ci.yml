@@ -27,7 +27,7 @@ Build binary:
     - apk add zip
   script:
     - GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./${TF_DIR}/certGen main.go
-    - zip ${TF_DIR}/certGen.zip ${TF_DIR}/certGen
+    - zip -j ${TF_DIR}/certGen.zip ${TF_DIR}/certGen
   <<: *tags
   artifacts:
     paths:
