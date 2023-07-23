@@ -50,7 +50,7 @@ Optional parameters include:
 - **state:** The state or province of the organization.
 
 
-curl --request POST --url https://api.jb.wh1sk.one/certgen --header 'content-type: application/json' --header 'user-agent: vscode-restclient' --data '{"common_name": "from_curl","country": "curl","email": "curl@example.com","location": "curl","organization": "string","organization_unit": "string","not_after": 365}'
+curl --request POST --url https://api.jb.wh1sk.one/certgen --header 'content-type: application/json' --data '{"common_name": "from_curl","country": "curl","email": "curl@example.com","location": "curl","organization": "string","organization_unit": "string","not_after": 365}'
 
 
 ### Example of use
