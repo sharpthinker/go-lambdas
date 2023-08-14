@@ -33,30 +33,3 @@ The service is designed to scale easily to handle increasing loads. Vertical sca
 
 By utilizing Route53's geolocation routing, the service provides low-latency access to clients from different regions. Clients are automatically routed to the nearest API Gateway instance for certificate generation, ensuring a smooth and responsive experience for clients in North America and Europe.
 
-# How to Use? 
-
-Create a JSON request body with the required parameters for certificate generation. The following parameters are mandatory:
-
-- **common_name:** The common name for the certificate.
-- **country:** The country code for the organization.
-- **email:** The email address of the certificate owner.
-- **location:** The location (city or locality) of the organization.
-- **not_after:** The validity period of the certificate in days (365 days in this example).
-
-Optional parameters include:
-
-- **organization:** The organization name.
-- **organization_unit:** The organizational unit name.
-- **state:** The state or province of the organization.
-
-
-curl --request POST --url https://api.jb.wh1sk.one/certgen --header 'content-type: application/json' --data '{"common_name": "from_curl","country": "curl","email": "curl@example.com","location": "curl","organization": "string","organization_unit": "string","not_after": 365}'
-
-
-### Example of use
-
-https://jumpshare.com/v/LZa0pfszq8nEFYgcF74w
-
-### Architecture diagram 
-
-[diagram](./assets/Architecture_Diagram.png)
